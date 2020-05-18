@@ -2,7 +2,7 @@ import socket
 import pickle
 import select
 import errno
-from ActionHandler import ActionHandler
+from Mediator import Mediator
 from UserInterface import UserInterface
 from State import State
 
@@ -16,11 +16,11 @@ client_socket.connect((IP, PORT))
 #client_socket.setblocking(False)
 
 state = State()
-action_handler = ActionHandler()
+mediator = Mediator()
 
 while True:
     action = input('\nAction: ')
-    sv_command, recv_data, valid = action_handler.getCommand(action, state)
+    sv_command, recv_data, valid = mediator.handle((action, state))
     
     if not valid:
         print("Command invalid!!1!")

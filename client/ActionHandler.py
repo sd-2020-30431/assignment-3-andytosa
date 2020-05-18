@@ -2,48 +2,61 @@ from User import User
 from FoodItem import FoodItem
 from UserInterface import UserInterface
 
+class RegisterHandler:
+    def handle(self, request):
+        username = input('username: ')
+        password = input('password: ')
+        email = input('email: ')
+
+        return (self.registerUser(User(username, password, email)), False, True)
+
+class LoginHandler:
+    def handle(self, request):
+        username = input('username: ')
+        password = input('password: ')
+
+        return (self.loginUser(username, password), True, True)
+
+class LogoutHandler:
+    def handle(self, request):
+        state.logOutUser()
+        print('User logged out.')
+        return (None, None, True)
+
+class FoodHandler:
+    def handle(self, request):
+        user = state.active_user
+        if user is None:
+            return (None, False, False)
+
+        return (self.selectFood(user.getID()), True, True)
+
+class AddFoodHandler:
+    def handle(self, request):
+        user = state.active_user
+        if user is None:
+            return (None, False, False)
+        
+        name = input('name: ')
+        quantity = input('quantity: ')
+        calories = input('calories: ')
+        print('(date format YYYY-MM-DD)')
+        buy_date = input('buy date: ')
+        exp_date = input('exp date: ')
+        
+        food = FoodItem(name, quantity, calories, buy_date, exp_date, state.active_user.getID())
+        return (self.insertFood(food), False, True)
+
+class EatFoodHandler:
+    def handle(self, request):
+        food_id = input('food id: ')
+
+        return (self.deleteFood(food_id), False, True)
+
+
 class ActionHandler:
 
     def getCommand(self, action, state):
-        if action == 'register':
-            username = input('username: ')
-            password = input('password: ')
-            email = input('email: ')
-
-            return (self.registerUser(User(username, password, email)), False, True)
-        
-        if action == 'login':
-            username = input('username: ')
-            password = input('password: ')
-
-            return (self.loginUser(username, password), True, True)
-
-        if action == 'logout':
-            state.logOutUser()
-            print('User logged out.')
-            return (None, None, True)
-
-        if action == 'food':
-            user = state.active_user
-            if user is None:
-                return (None, False, False)
-
-            return (self.selectFood(user.getID()), True, True)
-        
-        if action == 'addfood':
-            user = state.active_user
-            if user is None:
-                return (None, False, False)
-            
-            name = input('name: ')
-            quantity = input('quantity: ')
-            calories = input('calories: ')
-            print('(date format YYYY-MM-DD)')
-            buy_date = input('buy date: ')
-            exp_date = input('exp date: ')
-            
-            food = FoodItem(name, quantity, calories, buy_date, exp_date, state.active_user.getID())
-            return (self.insertFood(food), False, True)
  
         if action == 'eatfood':
             food_id = input('food id: ')
