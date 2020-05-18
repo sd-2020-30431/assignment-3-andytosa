@@ -3,7 +3,6 @@ import pickle
 import select
 import errno
 from Mediator import Mediator
-from UserInterface import UserInterface
 from State import State
 
 HEADER_LENGTH = 10
@@ -37,4 +36,4 @@ while True:
         data = client_socket.recv(size)
         data = pickle.loads(data)
 
-        action_handler.handleData(action, data, state)
+        mediator.handleData(action, data, state)

@@ -1,6 +1,5 @@
 from User import User
 from FoodItem import FoodItem
-from UserInterface import UserInterface
 
 class RegisterHandler:
     def handle(self, request):
@@ -8,7 +7,10 @@ class RegisterHandler:
         password = input('password: ')
         email = input('email: ')
 
-        return (self.registerUser(User(username, password, email)), False, True)
+        return (self.registerUser(User(None, username, password, email)), False, True)
+    
+    def registerUser(self, user):
+        return f"INSERT INTO users (username, password, email) VALUES ('{user.username}', '{user.password}', '{user.email}');"
 
 class LoginHandler:
     def handle(self, request):
@@ -16,23 +18,33 @@ class LoginHandler:
         password = input('password: ')
 
         return (self.loginUser(username, password), True, True)
+    
+    def loginUser(self, username, password):
+        return f"SELECT * FROM users WHERE users.username = '{username}' AND users.password = '{password}'"
 
 class LogoutHandler:
     def handle(self, request):
+        _, state = request
         state.logOutUser()
         print('User logged out.')
         return (None, None, True)
 
 class FoodHandler:
     def handle(self, request):
+        _, state = request
         user = state.active_user
         if user is None:
             return (None, False, False)
 
         return (self.selectFood(user.getID()), True, True)
+    
+    def selectFood(self, user_id):
+        return f"SELECT * FROM foods WHERE foods.user_id = {user_id}"
+
 
 class AddFoodHandler:
     def handle(self, request):
+        _, state = request
         user = state.active_user
         if user is None:
             return (None, False, False)
@@ -46,43 +58,7 @@ class AddFoodHandler:
         
         food = FoodItem(name, quantity, calories, buy_date, exp_date, state.active_user.getID())
         return (self.insertFood(food), False, True)
-
-class EatFoodHandler:
-    def handle(self, request):
-        food_id = input('food id: ')
-
-        return (self.deleteFood(food_id), False, True)
-
-
-class ActionHandler:
-
-    def getCommand(self, action, state):
- 
-        if action == 'eatfood':
-            food_id = input('food id: ')
-
-            return (self.deleteFood(food_id), False, True)
-
-        return (None, None, False)
-
-
-    def handleData(self, action, data, state):
-        if action == 'login':
-            if data is not None:
-                state.setUser(data[0])
-                print(f"Login succesful. Logged in as {state.active_user.username}")
-            else:
-                print(f"Wrong username or password.")
-
-        if action == 'food':
-            state.setFoodData(data)
-            UserInterface.printFood(data)
-
-
-    def registerUser(self, user):
-        return f"INSERT INTO users (username, password, email) VALUES ('{user.username}', '{user.password}', '{user.email}');"
-
-
+    
     def insertFood(self, food):
         return f"""INSERT INTO foods (name, quantity, calories, buy_date, exp_date, user_id) VALUES (
             '{food.name}',
@@ -92,14 +68,30 @@ class ActionHandler:
             '{food.exp_date}', 
             {food.user_id}
             );"""
-    
+
+
+class EatFoodHandler:
+    def handle(self, request):
+        food_id = input('food id: ')
+
+        return (self.deleteFood(food_id), False, True)
+
     def deleteFood(self, food_id):
         return f"DELETE FROM foods WHERE id = {food_id}"
     
-    def selectFood(self, user_id):
-        return f"SELECT * FROM foods WHERE foods.user_id = {user_id}"
 
 
-    def loginUser(self, username, password):
-        return f"SELECT * FROM users WHERE users.username = '{username}' AND users.password = '{password}'"
+#return (None, None, False)
+
+
+
+    
+
+
+
+    
+    
+    
+
+    
 
