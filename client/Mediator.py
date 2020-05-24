@@ -1,4 +1,5 @@
 from ActionHandler import RegisterHandler, LoginHandler, LogoutHandler, FoodHandler, AddFoodHandler, EatFoodHandler
+from Decorators import report
 
 class Mediator:
     handlerMap = {
@@ -27,6 +28,10 @@ class Mediator:
 
         if action == 'food':
             state.setFoodData(data)
-            print()
-            for food in data:
+            
+            @report
+            def print_food(food):
                 print(f'{food[1]:<10}: quantity {food[2]} calories {food[3]} expires {food[5]}   [{food[0]:2}]')
+
+            for food in data:
+                print_food(food)
